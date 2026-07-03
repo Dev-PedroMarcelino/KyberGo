@@ -23,7 +23,7 @@ export function QuotesAreaChart({
   height?: number;
 }) {
   return (
-    <div style={{ height }} className="w-full">
+    <div style={{ height }} className="w-full min-w-0 overflow-hidden">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
           <defs>

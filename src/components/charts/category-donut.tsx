@@ -15,7 +15,7 @@ export function CategoryDonut({ data, height = 200 }: { data: DonutSlice[]; heig
   const total = data.reduce((sum, slice) => sum + slice.value, 0);
 
   return (
-    <div className="flex flex-col items-center gap-5 sm:flex-row sm:justify-center">
+    <div className="flex flex-col items-center gap-6">
       <div style={{ height, width: height }} className="relative shrink-0">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -46,16 +46,18 @@ export function CategoryDonut({ data, height = 200 }: { data: DonutSlice[]; heig
         </ResponsiveContainer>
       </div>
 
-      {/* Legenda com valores — identidade nunca depende só da cor */}
-      <ul className="w-full max-w-[220px] space-y-2.5">
+      {/* Legenda abaixo do donut, ocupando a largura do card — os nomes das
+          categorias aparecem por inteiro (a identidade não depende só da cor)
+          e nada vaza para fora, mesmo quando o card fica estreito (3 colunas). */}
+      <ul className="w-full max-w-xs space-y-2.5">
         {data.map((slice, i) => (
           <li key={slice.name} className="flex items-center gap-2.5">
             <span
               className="h-2.5 w-2.5 shrink-0 rounded-[4px]"
               style={{ backgroundColor: DONUT_COLORS[i % DONUT_COLORS.length] }}
             />
-            <span className="flex-1 truncate text-sm text-kyber-gray">{slice.name}</span>
-            <span className="text-sm font-semibold tabular-nums text-kyber-white">
+            <span className="min-w-0 flex-1 truncate text-sm text-kyber-gray">{slice.name}</span>
+            <span className="shrink-0 text-sm font-semibold tabular-nums text-kyber-white">
               {Math.round((slice.value / total) * 100)}%
             </span>
           </li>
