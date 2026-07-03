@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --kyber-black: #050806;
+  --kyber-rich: #0b0f0c;
+  --kyber-green: #00e676;
+  --kyber-neon: #39ff88;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-kyber-black text-kyber-soft antialiased;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* Modo claro (opcional — dark é o padrão) */
+html.light body {
+  @apply bg-kyber-soft text-kyber-rich;
+}
+
+::selection {
+  background: rgba(0, 230, 118, 0.3);
+  color: #fff;
+}
+
+/* Scrollbar premium */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 230, 118, 0.35);
+}
+
+@layer components {
+  /* Superfície de vidro (glassmorphism) */
+  .glass {
+    @apply border border-border bg-glass backdrop-blur-xl;
+  }
+
+  .glass-card {
+    @apply glass rounded-2xl shadow-card;
+  }
+
+  /* Texto com gradiente da marca */
+  .text-gradient {
+    @apply bg-gradient-text bg-clip-text text-transparent;
+    background-size: 200% auto;
+  }
+
+  .text-gradient-animated {
+    @apply text-gradient animate-gradient-x;
+  }
+
+  /* Brilho de destaque atrás de elementos */
+  .glow-orb {
+    @apply pointer-events-none absolute rounded-full blur-3xl;
+    background: radial-gradient(circle, rgba(0, 230, 118, 0.22), transparent 70%);
+  }
+
+  /* Grade sutil de fundo */
+  .bg-grid {
+    background-image: linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  /* Anel de foco premium */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-kyber-green/60 focus-visible:ring-offset-2 focus-visible:ring-offset-kyber-black;
+  }
+
+  /* Skeleton com shimmer */
+  .skeleton {
+    @apply animate-shimmer rounded-lg;
+    background: linear-gradient(
+      110deg,
+      rgba(255, 255, 255, 0.04) 40%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0.04) 60%
+    );
+    background-size: 200% 100%;
+  }
+}
