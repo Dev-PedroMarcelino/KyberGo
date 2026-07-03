@@ -3,6 +3,20 @@ import type { Namespace } from "../locales";
 /** Strings do domínio "whatsapp": integração, conexão da instância e log de mensagens. */
 export const whatsapp: Namespace = {
   "pt-BR": {
+    credsTitle: "Configuração da API de WhatsApp",
+    credsSubtitle: "Credenciais desta empresa para conectar o agente de IA ao seu número (PRD 4.3c). Armazenadas com criptografia.",
+    credsValidBadge: "Credenciais válidas",
+    credsProvider: "Provedor",
+    credsProviderCustom: "Provedor customizado",
+    credsBaseUrl: "URL base da API",
+    credsToken: "Token da API",
+    credsTokenHint: "Gerado no painel do seu provedor de WhatsApp.",
+    credsWebhookSecret: "Segredo do webhook",
+    credsWebhookSecretHint: "Usado para validar a assinatura das mensagens recebidas.",
+    credsWebhookUrl: "URL de webhook (configure no provedor)",
+    credsToggleVisibility: "Alternar visibilidade",
+    credsSaved: "Credenciais salvas!",
+    credsSavedDescription: "A conexão será revalidada com o provedor em instantes.",
     title: "WhatsApp",
     subtitle: "Gerencie a instância conectada à IA de orçamentos.",
     instanceTitle: "Instância WhatsApp",

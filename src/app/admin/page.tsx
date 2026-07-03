@@ -16,6 +16,7 @@ import {
   Lock,
   LockOpen,
   MoreHorizontal,
+  Plus,
   PlugZap,
   Rocket,
   Search,
@@ -33,7 +34,8 @@ import { AnimatedCounter, PageTransition, StaggerContainer, staggerItem } from "
 import { Button } from "@/components/ui/button";
 import { GlassCard, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+import { Input, Select } from "@/components/ui/input";
+import { Modal } from "@/components/ui/modal";
 import { Dropdown, DropdownItem, EmptyState, MetricCard, Progress, Switch, Tabs } from "@/components/ui/misc";
 import { useToast } from "@/components/ui/toast";
 import { GrowthAreaChart, type GrowthPoint } from "@/components/charts/growth-area-chart";
@@ -131,6 +133,38 @@ export default function AdminPage() {
   const [planActive, setPlanActive] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(MOCK_PLANS.map((plan) => [plan.id, plan.isActive]))
   );
+
+  // Cadastro manual de empresas pelo super admin (PRD 4.2)
+  const [registerOpen, setRegisterOpen] = useState(false);
+  const [regName, setRegName] = useState("");
+  const [regSegment, setRegSegment] = useState("");
+  const [regPlan, setRegPlan] = useState("Starter");
+  const [regTrial, setRegTrial] = useState(true);
+  const [regError, setRegError] = useState<string>();
+
+  const registerCompany = () => {
+    if (!regName.trim()) {
+      setRegError(t("admin.registerNameRequired"));
+      return;
+    }
+    const company: AdminCompany = {
+      id: `ac_${Math.random().toString(36).slice(2, 8)}`,
+      name: regName.trim(),
+      segment: regSegment.trim() || t("admin.registerSegmentFallback"),
+      plan: regPlan,
+      status: regTrial ? "trial" : "active",
+      whatsappConnected: false,
+      pdfsUsed: 0,
+      pdfsLimit: MOCK_PLANS.find((p) => p.name === regPlan)?.limits.pdfsPerMonth ?? 30,
+      createdAt: new Date().toISOString(),
+    };
+    setCompanies((prev) => [company, ...prev]);
+    setRegisterOpen(false);
+    setRegName("");
+    setRegSegment("");
+    setRegError(undefined);
+    toast("success", t("admin.registerToastTitle"), t("admin.registerToastDescription", { name: company.name }));
+  };
 
   const filteredCompanies = useMemo(() => {
     const term = search.trim().toLocaleLowerCase("pt-BR");
@@ -268,6 +302,10 @@ export default function AdminPage() {
                 <CardDescription>{t("admin.companiesSubtitle")}</CardDescription>
               </div>
               <div className="flex w-full flex-wrap items-center gap-3 lg:w-auto">
+                <Button size="md" onClick={() => setRegisterOpen(true)}>
+                  <Plus className="h-4 w-4" />
+                  {t("admin.registerButton")}
+                </Button>
                 <div className="w-full sm:w-64">
                   <Input
                     value={search}
@@ -465,6 +503,49 @@ export default function AdminPage() {
           </div>
         </PageTransition>
       </main>
+
+      {/* Cadastro manual de empresa + concessão de acesso (PRD 4.2) */}
+      <Modal
+        open={registerOpen}
+        onClose={() => setRegisterOpen(false)}
+        title={t("admin.registerTitle")}
+        description={t("admin.registerDescription")}
+      >
+        <div className="space-y-4">
+          <Input
+            label={t("admin.registerName")}
+            placeholder={t("admin.registerNamePlaceholder")}
+            value={regName}
+            onChange={(e) => setRegName(e.target.value)}
+            error={regError}
+          />
+          <Input
+            label={t("admin.registerSegment")}
+            placeholder={t("admin.registerSegmentPlaceholder")}
+            value={regSegment}
+            onChange={(e) => setRegSegment(e.target.value)}
+          />
+          <Select
+            label={t("admin.registerPlan")}
+            options={MOCK_PLANS.map((plan) => ({ value: plan.name, label: plan.name }))}
+            value={regPlan}
+            onChange={(e) => setRegPlan(e.target.value)}
+          />
+          <div className="rounded-xl border border-border bg-white/[0.03] p-4">
+            <Switch checked={regTrial} onChange={setRegTrial} label={t("admin.registerTrial")} />
+            <p className="mt-2 text-xs text-kyber-dim">{t("admin.registerAccessHint")}</p>
+          </div>
+          <div className="flex justify-end gap-3 pt-1">
+            <Button variant="secondary" onClick={() => setRegisterOpen(false)}>
+              {t("common.cancel")}
+            </Button>
+            <Button onClick={registerCompany}>
+              <Plus className="h-4 w-4" />
+              {t("admin.registerConfirm")}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

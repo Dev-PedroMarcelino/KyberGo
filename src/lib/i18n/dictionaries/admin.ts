@@ -3,6 +3,21 @@ import type { Namespace } from "../locales";
 /** Strings do domínio "admin". Preenchido pelo módulo correspondente. */
 export const admin: Namespace = {
   "pt-BR": {
+    registerButton: "Cadastrar empresa",
+    registerTitle: "Cadastrar nova empresa",
+    registerDescription: "Crie a conta da empresa cliente e conceda o acesso à plataforma.",
+    registerName: "Nome da empresa",
+    registerNamePlaceholder: "Ex.: Telhados Fortes Engenharia",
+    registerNameRequired: "Informe o nome da empresa.",
+    registerSegment: "Segmento",
+    registerSegmentPlaceholder: "Ex.: Telhados",
+    registerSegmentFallback: "Serviços gerais",
+    registerPlan: "Plano inicial",
+    registerTrial: "Iniciar com trial de 14 dias",
+    registerAccessHint: "O acesso é concedido imediatamente: a empresa recebe o convite por e-mail para definir a senha e iniciar o onboarding.",
+    registerConfirm: "Cadastrar e conceder acesso",
+    registerToastTitle: "Empresa cadastrada!",
+    registerToastDescription: "{{name}} recebeu acesso à plataforma e aparecerá com status de trial/ativa.",
     badge: "Painel da plataforma",
     title: "Visão geral da plataforma",
     subtitle: "Acompanhe empresas, receita recorrente e a saúde do KyberGo.",
