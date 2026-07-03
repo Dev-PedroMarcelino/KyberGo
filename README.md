@@ -141,3 +141,32 @@ Route handlers (`src/app/api/*`) para webhooks de WhatsApp e billing e geração
 6. Fila/cron para envio das `scheduled_messages` (Supabase Edge Functions + pg_cron).
 7. Completar traduções en/es dos namespaces de feature e do copy de marketing.
 8. Testes E2E (Playwright) dos fluxos críticos e limites de uso por plano no backend.
+
+---
+
+## 12. Rastreabilidade com o PRD
+
+Mapeamento dos requisitos funcionais do `PRD.md` para a implementação:
+
+| RF | Requisito | Onde está |
+| --- | --- | --- |
+| RF-01 | Atendimento por IA no WhatsApp | `/api/webhooks/whatsapp` + `src/lib/integrations/ai.ts` + `/app/whatsapp` (logs) |
+| RF-02 | Coleta guiada com perguntas quando faltar dado | `AiProvider.extractQuote` (missingQuestions) + `/app/orcamentos/inteligente` |
+| RF-03 | Motor de precificação por critérios configuráveis | Tabelas `quote_types`/`quote_criteria` + construtor em `/app/orcamentos/tipos` |
+| RF-04 | PDF personalizado (logo + dados) | `pdf_templates` + editor `/app/pdf/templates` + `PdfDocument` |
+| RF-05 | Envio do PDF pelo WhatsApp | `WhatsAppProvider.sendMessage` (documentUrl) |
+| RF-06 | Painel Super Admin com cadastro de empresas | `/admin` (cadastro, concessão de acesso, bloqueio) |
+| RF-07 | Painel da empresa responsivo com login | `/login` + `/app/*` (mobile-first) |
+| RF-08 | Cadastro de dados/logo da empresa | Onboarding etapa 1 + `/app/configuracoes` (aba Empresa) |
+| RF-09 | Configuração da API do WhatsApp por empresa | `/app/whatsapp` (credenciais por empresa) + `whatsapp_instances` |
+| RF-10 | Cadastro de serviços | `/app/orcamentos/tipos` ("Serviços e critérios" — cada tipo é um serviço do catálogo) |
+| RF-11 | Cadastro e histórico de clientes (base CRM) | `/app/clientes` + `/app/clientes/[id]` |
+| RF-12 | Registro de orçamentos como leads | Criação automática de `crm_deals` ao gerar orçamento |
+| RF-13 | Funil com status, valor fechado e descontos | `/app/crm` (Kanban, fechamento com valor/motivo) + campo `discount` em `quotes` |
+| RF-14 | Relatórios gerados × fechados | `/app/relatorios` + widgets do dashboard |
+| RF-15 | Mensagens de manutenção por tipo de serviço | `maintenance_interval_days` por serviço + `/app/automacoes` |
+| RF-16 | Disparo automático de follow-up pela IA | `automation_rules` + `scheduled_messages` + `/app/automacoes/calendario` |
+
+**Fases do roadmap (PRD §11):** a Fase 1 (MVP de orçamento automático) e a Fase 2 (CRM/funil) estão cobertas pelas telas acima; a Fase 3 (recorrência/follow-up) tem a UI e o modelo de dados prontos, faltando o worker de envio; a Fase 4 (integrações/analytics avançado) fica para evolução.
+
+**Não-objetivos respeitados (PRD §2):** sem integração ERP, sem emissão fiscal e sem gateway de pagamento no MVP — a interface de assinatura existe como arquitetura SaaS pronta, com provider de cobrança mock a ser ativado apenas quando o negócio decidir (camada `billing.ts`).

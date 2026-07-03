@@ -52,6 +52,7 @@ export default function RegisterPage() {
 
   const segmentOptions = [
     { value: "calhas", label: t("auth.segOptGutters") },
+    { value: "telhados", label: t("auth.segOptRoofing") },
     { value: "ar", label: t("auth.segOptAc") },
     { value: "marcenaria", label: t("auth.segOptCarpentry") },
     { value: "gesso", label: t("auth.segOptPlaster") },
