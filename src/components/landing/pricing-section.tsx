@@ -18,7 +18,7 @@ export function PricingSection() {
   const [annual, setAnnual] = useState(false);
 
   return (
-    <section id="planos" className="relative py-24">
+    <section id="planos" className="relative overflow-hidden py-24">
       <div className="glow-orb left-1/2 top-0 h-[300px] w-[600px] -translate-x-1/2 opacity-50" />
       <div className="relative mx-auto max-w-7xl px-4 lg:px-8">
         <Reveal className="mx-auto max-w-2xl text-center">

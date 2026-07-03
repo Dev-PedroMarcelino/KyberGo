@@ -7,6 +7,12 @@ O KyberGo é uma plataforma SaaS B2B premium para empresas de serviço (calhas, 
 
 ---
 
+## Deploy rápido (testes)
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FDev-PedroMarcelino%2FKyberGo)
+
+Sem variáveis de ambiente o deploy sobe em **modo demonstração** — ideal para testes. Alternativa manual: [vercel.com/new](https://vercel.com/new) → *Import Git Repository* → selecione `Dev-PedroMarcelino/KyberGo` → *Deploy* (o preset Next.js é detectado automaticamente, nenhuma configuração extra é necessária).
+
 ## Como rodar
 
 ```bash

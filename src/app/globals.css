@@ -13,6 +13,14 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Trava global contra scroll lateral: elementos decorativos absolutos
+   (glow-orbs, cartões flutuantes) nunca devem expandir a página no mobile.
+   "clip" não cria contêiner de rolagem, preservando position: sticky. */
+html,
+body {
+  overflow-x: clip;
+}
+
 body {
   @apply bg-kyber-black text-kyber-soft antialiased;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
