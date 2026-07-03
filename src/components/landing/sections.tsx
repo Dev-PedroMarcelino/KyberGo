@@ -85,7 +85,7 @@ export function SolutionSection() {
   const content = LANDING_CONTENT[locale].solution;
 
   return (
-    <section className="relative py-24">
+    <section className="relative overflow-hidden py-24">
       <div className="glow-orb right-[5%] top-[10%] h-[360px] w-[360px] opacity-50" />
       <div className="relative mx-auto max-w-7xl px-4 lg:px-8">
         <Reveal className="mx-auto max-w-2xl text-center">
@@ -239,7 +239,7 @@ export function InteractiveDemo() {
   const [segment, setSegment] = useState("calhas");
 
   return (
-    <section id="demo" className="relative py-24">
+    <section id="demo" className="relative overflow-hidden py-24">
       <div className="glow-orb left-[-5%] top-[20%] h-[400px] w-[400px] opacity-50" />
       <div className="relative mx-auto max-w-7xl px-4 lg:px-8">
         <Reveal className="mx-auto max-w-2xl text-center">
