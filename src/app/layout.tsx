@@ -25,8 +25,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className="dark">
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans`}>
+    // suppressHydrationWarning: extensões de navegador (ex.: Dark Reader) injetam
+    // atributos no HTML antes da hidratação; o tema/idioma também é ajustado no cliente.
+    <html lang="pt-BR" className="dark" suppressHydrationWarning>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans`} suppressHydrationWarning>
         <I18nProvider>
           <ToastProvider>{children}</ToastProvider>
         </I18nProvider>
