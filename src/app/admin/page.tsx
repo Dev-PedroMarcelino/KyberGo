@@ -7,6 +7,7 @@
 
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   ArrowUpRight,
@@ -15,6 +16,7 @@ import {
   Eye,
   Lock,
   LockOpen,
+  LogIn,
   MoreHorizontal,
   Plus,
   PlugZap,
@@ -33,28 +35,21 @@ import { KyberLogo } from "@/components/layout/sidebar";
 import { AnimatedCounter, PageTransition, StaggerContainer, staggerItem } from "@/components/motion";
 import { Button } from "@/components/ui/button";
 import { GlassCard, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Input, Select } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { Dropdown, DropdownItem, EmptyState, MetricCard, Progress, Switch, Tabs } from "@/components/ui/misc";
 import { useToast } from "@/components/ui/toast";
 import { GrowthAreaChart, type GrowthPoint } from "@/components/charts/growth-area-chart";
+import {
+  CompanyDetailDrawer,
+  STATUS_META,
+  type AdminCompany,
+  type CompanyStatus,
+} from "@/components/admin/company-detail-drawer";
+import { startImpersonation } from "@/lib/impersonation";
 
 /* ---------------- Dados mock locais do painel ---------------- */
-
-type CompanyStatus = "trial" | "active" | "past_due" | "blocked";
-
-interface AdminCompany {
-  id: string;
-  name: string;
-  segment: string;
-  plan: string;
-  status: CompanyStatus;
-  whatsappConnected: boolean;
-  pdfsUsed: number;
-  pdfsLimit: number;
-  createdAt: string;
-}
 
 const INITIAL_COMPANIES: AdminCompany[] = [
   { id: "ac_001", name: "Calhas ProTech", segment: "Calhas e rufos", plan: "Professional", status: "active", whatsappConnected: true, pdfsUsed: 62, pdfsLimit: 150, createdAt: "2026-01-10T10:00:00Z" },
@@ -114,20 +109,15 @@ const EVENT_META: Record<PlatformEvent["type"], { icon: React.ReactNode; classNa
   company_blocked: { icon: <Lock className="h-4 w-4" />, className: "bg-amber-400/10 text-amber-300" },
 };
 
-const STATUS_META: Record<CompanyStatus, { tone: BadgeProps["tone"]; labelKey: string }> = {
-  trial: { tone: "blue", labelKey: "admin.statusTrial" },
-  active: { tone: "green", labelKey: "admin.statusActive" },
-  past_due: { tone: "yellow", labelKey: "admin.statusPastDue" },
-  blocked: { tone: "red", labelKey: "admin.statusBlocked" },
-};
-
 type StatusFilter = "all" | CompanyStatus;
 
 export default function AdminPage() {
   const { t, locale } = useI18n();
   const { toast } = useToast();
+  const router = useRouter();
 
   const [companies, setCompanies] = useState<AdminCompany[]>(INITIAL_COMPANIES);
+  const [detailCompany, setDetailCompany] = useState<AdminCompany | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [planActive, setPlanActive] = useState<Record<string, boolean>>(() =>
@@ -176,13 +166,27 @@ export default function AdminPage() {
   }, [companies, search, statusFilter]);
 
   const showDetails = (company: AdminCompany) => {
-    toast("info", t("admin.toastDetailsTitle"), t("admin.toastDetailsDescription", { name: company.name }));
+    setDetailCompany(company);
+  };
+
+  const impersonate = (company: AdminCompany) => {
+    startImpersonation(company.id, company.name);
+    toast("info", t("admin.impersonationToast"), t("admin.impersonationToastDescription", { name: company.name }));
+    router.push("/app");
+  };
+
+  const changePlan = (company: AdminCompany, plan: string) => {
+    setCompanies((prev) => prev.map((item) => (item.id === company.id ? { ...item, plan } : item)));
+    setDetailCompany((current) => (current?.id === company.id ? { ...current, plan } : current));
   };
 
   const toggleBlock = (company: AdminCompany) => {
     const blocking = company.status !== "blocked";
     setCompanies((prev) =>
       prev.map((item) => (item.id === company.id ? { ...item, status: blocking ? "blocked" : "active" } : item))
+    );
+    setDetailCompany((current) =>
+      current?.id === company.id ? { ...current, status: blocking ? "blocked" : "active" } : current
     );
     if (blocking) {
       toast("warning", t("admin.toastBlockTitle"), t("admin.toastBlockDescription", { name: company.name }));
@@ -199,6 +203,7 @@ export default function AdminPage() {
     setCompanies((prev) =>
       prev.map((item) => (item.id === company.id ? { ...item, whatsappConnected: false } : item))
     );
+    setDetailCompany((current) => (current?.id === company.id ? { ...current, whatsappConnected: false } : current));
     toast("warning", t("admin.toastDisconnectTitle"), t("admin.toastDisconnectDescription", { name: company.name }));
   };
 
@@ -390,6 +395,10 @@ export default function AdminPage() {
                                 <Eye className="h-4 w-4" />
                                 {t("admin.actionDetails")}
                               </DropdownItem>
+                              <DropdownItem onClick={() => impersonate(company)}>
+                                <LogIn className="h-4 w-4" />
+                                {t("admin.impersonate")}
+                              </DropdownItem>
                               <DropdownItem onClick={() => toggleBlock(company)}>
                                 {company.status === "blocked" ? (
                                   <>
@@ -503,6 +512,15 @@ export default function AdminPage() {
           </div>
         </PageTransition>
       </main>
+
+      {/* Detalhes da empresa: assinatura, uso, equipe, eventos e ações */}
+      <CompanyDetailDrawer
+        company={detailCompany}
+        onClose={() => setDetailCompany(null)}
+        onToggleBlock={toggleBlock}
+        onDisconnect={disconnectWhatsapp}
+        onChangePlan={changePlan}
+      />
 
       {/* Cadastro manual de empresa + concessão de acesso (PRD 4.2) */}
       <Modal

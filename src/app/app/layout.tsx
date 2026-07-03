@@ -7,6 +7,7 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
 import { CommandPalette } from "@/components/layout/command-palette";
 import { AiAssistant } from "@/components/layout/ai-assistant";
+import { ImpersonationBanner } from "@/components/layout/impersonation-banner";
 import { useI18n } from "@/lib/i18n";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { Badge } from "@/components/ui/badge";
@@ -67,6 +68,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar onOpenMenu={() => setMobileOpen(true)} onOpenPalette={() => setPaletteOpen(true)} />
+
+        <ImpersonationBanner />
 
         {!isSupabaseConfigured() && (
           <div className="flex items-center justify-center gap-2 border-b border-kyber-green/20 bg-kyber-green/[0.06] px-4 py-1.5 text-center">
