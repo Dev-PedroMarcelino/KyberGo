@@ -307,7 +307,7 @@ export default function ReportsPage() {
 
       {/* Receita + funil detalhado */}
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
-        <GlassCard hover={false} className="lg:col-span-2">
+        <GlassCard hover={false} className="min-w-0 lg:col-span-2">
           <CardHeader className="flex-wrap">
             <div>
               <CardTitle>{t("reports.revenueTitle")}</CardTitle>
@@ -382,7 +382,7 @@ export default function ReportsPage() {
               {t("reports.fuReactivatedFooter", { value: formatCurrency(data.followUp.reactivatedValue, locale) })}
             </p>
           </div>
-          <div className="rounded-xl border border-border bg-white/[0.02] p-4">
+          <div className="min-w-0 rounded-xl border border-border bg-white/[0.02] p-4">
             <p className="text-sm text-kyber-gray">{t("reports.fuTrendTitle")}</p>
             <div className="mt-3">
               <MiniAreaChart data={data.followUp.trend} seriesLabel={t("reports.fuTrendSeries")} />

@@ -180,7 +180,7 @@ export default function DashboardPage() {
 
       {/* Gráfico principal + funil */}
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
-        <GlassCard hover={false} className="lg:col-span-2">
+        <GlassCard hover={false} className="min-w-0 lg:col-span-2">
           <CardHeader className="flex-wrap">
             <div>
               <CardTitle>{t("dashboard.chartTitle")}</CardTitle>
@@ -374,7 +374,7 @@ export default function DashboardPage() {
           )}
         </GlassCard>
 
-        <GlassCard hover={false}>
+        <GlassCard hover={false} className="min-w-0">
           <CardHeader>
             <div>
               <CardTitle className="text-base">{t("dashboard.categoryTitle")}</CardTitle>

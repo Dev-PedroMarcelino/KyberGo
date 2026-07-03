@@ -24,7 +24,7 @@ export function MiniAreaChart({
   const gradientId = `kg-mini-${React.useId().replace(/[^a-zA-Z0-9]/g, "")}`;
 
   return (
-    <div style={{ height }} className="w-full">
+    <div style={{ height }} className="w-full min-w-0 overflow-hidden">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
           <defs>

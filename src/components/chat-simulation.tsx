@@ -6,7 +6,7 @@
  * As mensagens aparecem em sequência, com indicador de digitação.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, CheckCheck, FileText, Mic } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -33,10 +33,18 @@ export function ChatSimulation({
 }) {
   const [visibleCount, setVisibleCount] = useState(0);
   const [typing, setTyping] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setVisibleCount(0);
   }, [messages]);
+
+  // Mantém a última mensagem/indicador de digitação sempre visível, rolando
+  // apenas a área interna — o card em volta permanece estático na tela.
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
+  }, [visibleCount, typing]);
 
   useEffect(() => {
     if (visibleCount >= messages.length) {
@@ -71,81 +79,84 @@ export function ChatSimulation({
         </div>
       </div>
 
-      {/* Mensagens */}
-      <div className="flex min-h-[320px] flex-col gap-2.5 p-4">
-        <AnimatePresence initial={false}>
-          {visible.map((msg, i) => (
+      {/* Mensagens — a área rola internamente (como a tela do WhatsApp),
+          enquanto a altura do card permanece fixa e estática na tela. */}
+      <div ref={scrollRef} className="h-[360px] overflow-y-auto scroll-smooth">
+        <div className="flex min-h-full flex-col justify-end gap-2.5 p-4">
+          <AnimatePresence initial={false}>
+            {visible.map((msg, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 12, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ type: "spring", stiffness: 380, damping: 28 }}
+                className={cn("flex shrink-0", msg.from === "ai" ? "justify-end" : "justify-start")}
+              >
+                <div
+                  className={cn(
+                    "max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed shadow",
+                    msg.from === "ai"
+                      ? "rounded-br-sm bg-kyber-deep/90 text-white"
+                      : "rounded-bl-sm bg-white/10 text-kyber-soft"
+                  )}
+                >
+                  {msg.kind === "audio" ? (
+                    <span className="flex items-center gap-2">
+                      <Mic className="h-4 w-4 shrink-0" />
+                      <span className="flex items-center gap-0.5">
+                        {[6, 12, 8, 14, 10, 16, 9, 13, 7, 11].map((h, j) => (
+                          <span key={j} className="w-0.5 rounded-full bg-current/70" style={{ height: h }} />
+                        ))}
+                      </span>
+                      <span className="text-[11px] opacity-70">0:12</span>
+                    </span>
+                  ) : msg.kind === "pdf" ? (
+                    <span className="flex flex-col gap-2">
+                      <span className="flex items-center gap-2.5 rounded-xl bg-black/25 p-2.5">
+                        <FileText className="h-8 w-8 shrink-0 text-kyber-neon" />
+                        <span>
+                          <span className="block text-xs font-semibold">{msg.pdfLabel ?? "Proposta.pdf"}</span>
+                          <span className="block text-[11px] opacity-70">PDF — 2 páginas</span>
+                        </span>
+                      </span>
+                      {msg.text}
+                    </span>
+                  ) : (
+                    msg.text
+                  )}
+                  <span className="mt-1 flex items-center justify-end gap-1 text-[10px] opacity-60">
+                    {msg.from === "ai" ? <CheckCheck className="h-3 w-3 text-sky-300" /> : <Check className="h-3 w-3" />}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+
+          {/* Indicador de digitação */}
+          {typing && visibleCount < messages.length && (
             <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 12, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ type: "spring", stiffness: 380, damping: 28 }}
-              className={cn("flex", msg.from === "ai" ? "justify-end" : "justify-start")}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className={cn("flex shrink-0", nextFrom === "ai" ? "justify-end" : "justify-start")}
             >
               <div
                 className={cn(
-                  "max-w-[85%] rounded-2xl px-3.5 py-2.5 text-[13px] leading-relaxed shadow",
-                  msg.from === "ai"
-                    ? "rounded-br-sm bg-kyber-deep/90 text-white"
-                    : "rounded-bl-sm bg-white/10 text-kyber-soft"
+                  "flex items-center gap-1 rounded-2xl px-4 py-3",
+                  nextFrom === "ai" ? "bg-kyber-deep/90" : "bg-white/10"
                 )}
               >
-                {msg.kind === "audio" ? (
-                  <span className="flex items-center gap-2">
-                    <Mic className="h-4 w-4 shrink-0" />
-                    <span className="flex items-center gap-0.5">
-                      {[6, 12, 8, 14, 10, 16, 9, 13, 7, 11].map((h, j) => (
-                        <span key={j} className="w-0.5 rounded-full bg-current/70" style={{ height: h }} />
-                      ))}
-                    </span>
-                    <span className="text-[11px] opacity-70">0:12</span>
-                  </span>
-                ) : msg.kind === "pdf" ? (
-                  <span className="flex flex-col gap-2">
-                    <span className="flex items-center gap-2.5 rounded-xl bg-black/25 p-2.5">
-                      <FileText className="h-8 w-8 shrink-0 text-kyber-neon" />
-                      <span>
-                        <span className="block text-xs font-semibold">{msg.pdfLabel ?? "Proposta.pdf"}</span>
-                        <span className="block text-[11px] opacity-70">PDF — 2 páginas</span>
-                      </span>
-                    </span>
-                    {msg.text}
-                  </span>
-                ) : (
-                  msg.text
-                )}
-                <span className="mt-1 flex items-center justify-end gap-1 text-[10px] opacity-60">
-                  {msg.from === "ai" ? <CheckCheck className="h-3 w-3 text-sky-300" /> : <Check className="h-3 w-3" />}
-                </span>
+                {[0, 1, 2].map((d) => (
+                  <motion.span
+                    key={d}
+                    animate={{ opacity: [0.3, 1, 0.3] }}
+                    transition={{ duration: 1, repeat: Infinity, delay: d * 0.2 }}
+                    className="h-1.5 w-1.5 rounded-full bg-white/70"
+                  />
+                ))}
               </div>
             </motion.div>
-          ))}
-        </AnimatePresence>
-
-        {/* Indicador de digitação */}
-        {typing && visibleCount < messages.length && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={cn("flex", nextFrom === "ai" ? "justify-end" : "justify-start")}
-          >
-            <div
-              className={cn(
-                "flex items-center gap-1 rounded-2xl px-4 py-3",
-                nextFrom === "ai" ? "bg-kyber-deep/90" : "bg-white/10"
-              )}
-            >
-              {[0, 1, 2].map((d) => (
-                <motion.span
-                  key={d}
-                  animate={{ opacity: [0.3, 1, 0.3] }}
-                  transition={{ duration: 1, repeat: Infinity, delay: d * 0.2 }}
-                  className="h-1.5 w-1.5 rounded-full bg-white/70"
-                />
-              ))}
-            </div>
-          </motion.div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

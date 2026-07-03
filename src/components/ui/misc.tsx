@@ -214,14 +214,16 @@ export function Switch({
         disabled={disabled}
         onClick={() => onChange(!checked)}
         className={cn(
-          "focus-ring relative h-6 w-11 rounded-full transition-colors duration-300",
+          // inline-flex + px posiciona o círculo por layout (não por static position),
+          // garantindo que o thumb nunca escape da trilha do switch.
+          "focus-ring relative inline-flex h-6 w-11 shrink-0 items-center rounded-full px-0.5 transition-colors duration-300",
           checked ? "bg-kyber-green" : "bg-white/15"
         )}
       >
         <motion.span
-          animate={{ x: checked ? 22 : 2 }}
+          animate={{ x: checked ? 20 : 0 }}
           transition={{ type: "spring", stiffness: 500, damping: 32 }}
-          className="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow"
+          className="block h-5 w-5 shrink-0 rounded-full bg-white shadow"
         />
       </button>
       {label && <span className="text-sm text-kyber-soft">{label}</span>}

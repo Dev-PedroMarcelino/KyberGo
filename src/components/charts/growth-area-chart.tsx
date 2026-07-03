@@ -34,12 +34,12 @@ function SingleGrowthChart({
   height: number;
 }) {
   return (
-    <div>
+    <div className="min-w-0">
       <div className="mb-2 flex items-center gap-1.5">
         <span className="h-0.5 w-3.5 rounded-full" style={{ backgroundColor: color }} />
         <p className="text-xs font-medium text-kyber-gray">{label}</p>
       </div>
-      <div style={{ height }} className="w-full">
+      <div style={{ height }} className="w-full min-w-0 overflow-hidden">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 4, right: 8, left: -8, bottom: 0 }}>
             <defs>
