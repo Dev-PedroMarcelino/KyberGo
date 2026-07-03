@@ -154,6 +154,14 @@ export default function IntelligentQuotePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Invalida timers pendentes ao desmontar (todos checam runRef antes de atualizar estado).
+  useEffect(() => {
+    const run = runRef;
+    return () => {
+      run.current += 1;
+    };
+  }, []);
+
   // Auto-scroll do chat.
   useEffect(() => {
     const el = scrollRef.current;

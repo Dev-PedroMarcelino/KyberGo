@@ -185,6 +185,8 @@ export default function CrmPage() {
 
   const [deals, setDeals] = useState<CrmDeal[]>(MOCK_DEALS);
   const [activeId, setActiveId] = useState<string | null>(null);
+  // Evita que o clique disparado logo após um arrasto abra o drawer sem querer
+  const suppressClick = useRef(false);
 
   // Drawer de detalhes (o id fica guardado para a animação de saída não perder o conteúdo)
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -239,6 +241,10 @@ export default function CrmPage() {
 
   function handleDragEnd(event: DragEndEvent) {
     setActiveId(null);
+    suppressClick.current = true;
+    setTimeout(() => {
+      suppressClick.current = false;
+    }, 0);
     const { active, over } = event;
     if (!over) return;
     const targetStage = over.id as DealStage;
@@ -369,6 +375,7 @@ export default function CrmPage() {
               stage={stage}
               deals={deals.filter((d) => d.stage === stage.id)}
               onCardClick={(dealId) => {
+                if (suppressClick.current) return;
                 setDrawerDealId(dealId);
                 setDrawerOpen(true);
               }}

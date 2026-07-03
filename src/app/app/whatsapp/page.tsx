@@ -29,6 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { Modal } from "@/components/ui/modal";
 import { EmptyState, MetricCard, Progress, Tabs, Tooltip } from "@/components/ui/misc";
 import { useToast } from "@/components/ui/toast";
+import { ApiCredentialsCard } from "@/components/whatsapp/api-credentials-card";
 
 const QR_SIZE = 21;
 const QR_TTL_SECONDS = 45;
@@ -351,6 +352,9 @@ export default function WhatsAppPage() {
         <Info className="mt-0.5 h-4 w-4 shrink-0" />
         {t("whatsapp.singleInstanceNotice")}
       </div>
+
+      {/* Credenciais da API por empresa (PRD 4.3c) */}
+      <ApiCredentialsCard />
 
       {/* Métricas */}
       <div className="mt-8 grid gap-4 sm:grid-cols-3">

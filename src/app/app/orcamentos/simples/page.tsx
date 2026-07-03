@@ -102,6 +102,12 @@ export default function SimpleQuotePage() {
 
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
+  // Limpa os timers do processamento ao desmontar.
+  React.useEffect(() => {
+    const ref = timers;
+    return () => ref.current.forEach(clearTimeout);
+  }, []);
+
   const subtotal = useMemo(() => round2(items.reduce((acc, i) => acc + i.total, 0)), [items]);
   const total = Math.max(0, round2(subtotal - discount));
   const ready = phase === "result" && !missingValue;

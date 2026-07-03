@@ -182,9 +182,11 @@ export default function QuotesListPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((quote) => {
+                {filtered.map((quote, index) => {
                   const customer = customerById.get(quote.customerId);
                   const isExpired = quote.status === "expired" || new Date(quote.validUntil) < new Date();
+                  // Nas últimas linhas o menu abre para cima, evitando o corte pelo overflow da tabela.
+                  const openUp = filtered.length > 3 && index >= filtered.length - 2;
                   return (
                     <tr
                       key={quote.id}
@@ -220,6 +222,7 @@ export default function QuotesListPage() {
                       </td>
                       <td className="px-2 py-3.5" onClick={(e) => e.stopPropagation()}>
                         <Dropdown
+                          className={openUp ? "bottom-full mb-2 mt-0" : undefined}
                           trigger={
                             <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={t("common.actions")}>
                               <MoreHorizontal className="h-4 w-4" />
